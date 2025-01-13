@@ -21,5 +21,18 @@ if (!getApps().length) {
   });
 }
 
+export async function getDownloadUrlFromPath(path: string) {
+  if (!path) return;
+
+  const file = storage.file(path);
+
+  const [url] = await file.getSignedUrl({
+    action: "read",
+    expires: "03-09-2500",
+  });
+
+  return url;
+}
+
 export const db = getFirestore();
 export const storage = getStorage().bucket();
