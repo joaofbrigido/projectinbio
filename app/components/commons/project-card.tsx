@@ -1,6 +1,7 @@
 "use client";
 
 import { increaseProjectVisits } from "@/app/actions/increase-project-visits";
+import { formatUrl } from "@/app/lib/utils";
 import { ProjectData } from "@/app/server/get-profile-data";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -8,20 +9,22 @@ import { useParams } from "next/navigation";
 export default function ProjectCard({
   project,
   isOwner,
+  name,
+  description,
   img,
 }: {
-  project: ProjectData;
-  isOwner: boolean;
+  project?: ProjectData;
+  isOwner?: boolean;
+  name?: string;
+  description?: string;
   img: string;
 }) {
-  const formattedProjectUrl = project.projectUrl.startsWith("http://")
-    ? project.projectUrl
-    : `https://${project.projectUrl}`;
+  const formattedProjectUrl = formatUrl(project?.projectUrl || "");
 
   const { profileId } = useParams();
 
   async function handleClick() {
-    if (!profileId || !project.id || isOwner) return;
+    if (!profileId || !project?.id || isOwner) return;
 
     await increaseProjectVisits(profileId as string, project.id);
   }
@@ -32,21 +35,23 @@ export default function ProjectCard({
         <div className="size-24 rounded-md overflow-hidden flex-shrink-0">
           <img
             src={img}
-            alt={project.projectName}
+            alt={project?.projectName}
             className="w-full h-full object-cover"
           />
         </div>
         <div className="flex flex-col gap-2">
           {isOwner && (
             <span className="uppercase text-xs font-bold text-accent-green">
-              {project.totalVisits || 0} Cliques
+              {project?.totalVisits || 0} Cliques
             </span>
           )}
 
           <div className="flex flex-col">
-            <span className="text-white font-bold">{project.projectName}</span>
+            <span className="text-white font-bold">
+              {name || project?.projectName}
+            </span>
             <span className="text-content-body text-sm">
-              {project.projectDescription}
+              {description || project?.projectDescription}
             </span>
           </div>
         </div>
